@@ -106,5 +106,6 @@ int main() {
     b.multiplyByNumber(2);
     b.print();
     Matrix c(3,1);
+    cout << "lox";
 }
 //fkfdokfosjdgiojhsdihfuishuighuisehifasfafs
