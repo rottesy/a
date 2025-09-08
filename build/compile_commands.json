@@ -1,0 +1,8 @@
+[
+{
+  "directory": "C:/Users/egork/OneDrive/Рабочий стол/t/build",
+  "command": "D:\\msy2\\ucrt64\\bin\\g++.exe    -o CMakeFiles\\laba.dir\\laba.cpp.obj -c \"C:\\Users\\egork\\OneDrive\\Рабочий стол\\t\\laba.cpp\"",
+  "file": "C:/Users/egork/OneDrive/Рабочий стол/t/laba.cpp",
+  "output": "CMakeFiles/laba.dir/laba.cpp.obj"
+}
+]

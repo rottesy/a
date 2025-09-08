@@ -1,111 +1,100 @@
 #include <iostream>
-
+#include <limits>
+#include <vector> // ← ДОБАВИТЬ ЭТО
 using namespace std;
 
-class Matrix {
-private:
+class Matrix
+{
+  private:
     int rows;
     int cols;
-    double** data;
+    vector<vector<double>> data; // ← ЗАМЕНИТЬ ТИП
 
-public:
-    Matrix() {
-        rows = 0;
-        cols = 0;
-        data = nullptr;
-        cout << "Created empty matrix" << endl;
+  public:
+    // Конструктор по умолчанию
+    Matrix() : rows(0), cols(0) {
+        cout << "Created empty matrix" << "\n";
     }
-    
-    Matrix(int rowsCount,int colsCount) {
-        if (rowsCount <= 0 || colsCount <= 0) {
+
+    // Параметризированный конструктор
+    Matrix(int rowsCount, int colsCount) : rows(rowsCount), cols(colsCount) {
+        if (rowsCount <= 0 || colsCount <= 0)
+        {
             rows = 0;
             cols = 0;
-            data = nullptr;
-            cout << "Invalid input" << endl;
+            cout << "Invalid input" << "\n";
             return;
         }
-        else {
-            rows = rowsCount;
-            cols = colsCount;
-            data = new double*[rows];
 
-            for(int i = 0; i < rows;i++) {
-                data[i] = new double[cols];
-                for(int j = 0;j < cols;j++) {
-                    data[i][j] = 0;
-                }
-            }
-            cout << "Created matrix" << rows << "x" << cols << endl;
-        }
+        // Инициализация вектора - АВТОМАТИЧЕСКОЕ УПРАВЛЕНИЕ ПАМЯТЬЮ
+        data = vector<vector<double>>(rows, vector<double>(cols, 0.0));
+        cout << "Created matrix " << rows << "x" << cols << "\n";
     }
 
-    ~Matrix() {
-        if (data != nullptr) {
-            for(int i = 0;i < rows;i++) {
-                delete[] data[i];
-            }
-            delete[] data;
-            data = nullptr;
-            cout << "Memory cleaned up" << endl;
-        }
-    }
+    // ДЕСТРУКТОР БОЛЬШЕ НЕ НУЖЕН! 
+    // Вектор автоматически освободит память
 
-    void input() {
-        if(data == nullptr) {
-            cout << "Matrix not created" << endl;
+    // Конструктор копирования и оператор присваивания 
+    // теперь можно не писать - векторы копируются автоматически
+
+    void input()
+    {
+        if (data.empty()) // ← Проверка на пустоту
+        {
+            cout << "Matrix not created" << "\n";
             return;
         }
-        else {
-            cout << "Enter elements of matrix" << rows << "x" << cols << endl;
-            for (int i = 0;i < rows;i++) {
-                for (int j = 0;j < cols;j++) {
-                    cout << "Element [" << i << "][" << j << "]: ";
-                    cin >> data[i][j]; 
+
+        cout << "Enter elements of matrix " << rows << "x" << cols << "\n";
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                cout << "Element [" << i + 1 << "][" << j + 1 << "]: ";
+                while (!(cin >> data[i][j]))
+                {
+                    cout << "Error try again ";
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 }
             }
         }
     }
 
-    void print() {
-        if (data == nullptr) {
-            cout << "Matrix is empty" << endl;
+    void print() const
+    {
+        if (data.empty()) // ← Проверка на пустоту
+        {
+            cout << "Matrix is empty" << "\n";
             return;
         }
-        else {
-            cout << "Matrix" << rows << "x" << cols << ":" << endl;
-            for (int i = 0;i < rows;i++) {
-                for (int j = 0;j < cols;j++) {
-                    cout << data[i][j] << "\t"; 
-                }
-                cout << endl;
-            }  
+
+        cout << "Matrix " << rows << "x" << cols << ":" << "\n";
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                cout << data[i][j] << "\t";
+            }
+            cout << "\n";
         }
     }
 
-    void multiplyByNumber(double number) {
-        if (data == nullptr) {
-            cout << "Matrix is empty" << endl;
+    void multiplyByNumber(double number)
+    {
+        if (data.empty()) // ← Проверка на пустоту
+        {
+            cout << "Matrix is empty" << "\n";
             return;
         }
-        else {
-            for (int i = 0;i < rows;i++) {
-                for (int j = 0;j < cols;j++) {
-                    data[i][j] = data[i][j] * number;
-                }
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                data[i][j] = data[i][j] * number;
             }
-            cout << "Matrix multiplied by " << number << endl; 
         }
+        cout << "Matrix multiplied by " << number << "\n";
     }
 };
-
-int main() {
-    Matrix a;
-    Matrix b(2,3);
-    b.input();
-    b.print();
-    b.multiplyByNumber(2);
-    b.print();
-    Matrix c(3,1);
-    cout << "lox";
-}
-//fkfdokfosjdgiojhsdihfuishuighuisehifasfafs
