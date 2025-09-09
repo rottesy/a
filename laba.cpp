@@ -9,6 +9,45 @@ private:
     int cols;
     double **data;
 
+    // Вспомогательная функция для очистки памяти
+    void cleanup()
+    {
+        if (data != nullptr)
+        {
+            for (int i = 0; i < rows; i++)
+            {
+                delete[] data[i];
+            }
+            delete[] data;
+            data = nullptr;
+        }
+    }
+
+    // Вспомогательная функция для глубокого копирования
+    void deepCopy(const Matrix& other)
+    {
+        if (other.data == nullptr)
+        {
+            rows = 0;
+            cols = 0;
+            data = nullptr;
+            return;
+        }
+
+        rows = other.rows;
+        cols = other.cols;
+        data = new double *[rows];
+        
+        for (int i = 0; i < rows; i++)
+        {
+            data[i] = new double[cols];
+            for (int j = 0; j < cols; j++)
+            {
+                data[i][j] = other.data[i][j];
+            }
+        }
+    }
+
 public:
     // Конструктор по умолчанию
     Matrix()
@@ -46,51 +85,30 @@ public:
         cout << "Created matrix " << rows << "x" << cols << "\n";
     }
 
-    // КОНСТРУКТОР КОПИРОВАНИЯ (добавлен)
+    // Конструктор копирования
     Matrix(const Matrix& other)
     {
-        if (other.data == nullptr)
-        {
-            // Если исходная матрица пустая
-            rows = 0;
-            cols = 0;
-            data = nullptr;
-            cout << "Copied empty matrix" << "\n";
-            return;
-        }
-
-        // Копируем размеры
-        rows = other.rows;
-        cols = other.cols;
-        
-        // Выделяем новую память
-        data = new double *[rows];
-        
-        // Копируем данные
-        for (int i = 0; i < rows; i++)
-        {
-            data[i] = new double[cols];
-            for (int j = 0; j < cols; j++)
-            {
-                data[i][j] = other.data[i][j]; // Глубокое копирование
-            }
-        }
+        deepCopy(other);
         cout << "Matrix copied " << rows << "x" << cols << "\n";
+    }
+
+    // ОПЕРАТОР ПРИСВАИВАНИЯ КОПИРОВАНИЕМ (ДОБАВЛЕН)
+    Matrix& operator=(const Matrix& other)
+    {
+        if (this != &other) // Защита от самоприсваивания
+        {
+            cleanup();      // Очищаем текущие данные
+            deepCopy(other); // Выполняем глубокое копирование
+            cout << "Matrix assigned (copy) " << rows << "x" << cols << "\n";
+        }
+        return *this;
     }
 
     // Деструктор
     ~Matrix()
     {
-        if (data != nullptr)
-        {
-            for (int i = 0; i < rows; i++)
-            {
-                delete[] data[i];
-            }
-            delete[] data;
-            data = nullptr;
-            cout << "Memory cleaned up" << "\n";
-        }
+        cleanup();
+        cout << "Memory cleaned up" << "\n";
     }
 
     void input()
@@ -183,6 +201,22 @@ int main()
     // Копирование пустой матрицы
     Matrix emptyCopy = aaa;
     emptyCopy.print();
+
+    // Демонстрация оператора присваивания
+    cout << "\n=== Testing assignment operator ===\n";
+    Matrix eee(1, 1);
+    eee.input();
+    cout << "Before assignment:" << endl;
+    eee.print();
+    
+    eee = bbb; // Вызывается оператор присваивания
+    cout << "After assignment from bbb:" << endl;
+    eee.print();
+    
+    // Тест самоприсваивания
+    eee = eee; // Должно работать безопасно
+    cout << "After self-assignment:" << endl;
+    eee.print();
 
     return 0;
 }
