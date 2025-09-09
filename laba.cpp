@@ -21,9 +21,11 @@ private:
             delete[] data;
             data = nullptr;
         }
+        rows = 0;
+        cols = 0;
     }
 
-    // Вспомогательная функция для глубокого копирования
+    // Вспомогательная функция для глубокого копирования (БЕЗОПАСНАЯ)
     void deepCopy(const Matrix& other)
     {
         if (other.data == nullptr)
@@ -34,6 +36,12 @@ private:
             return;
         }
 
+        // Сначала сохраняем старые данные на случай самоприсваивания
+        int old_rows = rows;
+        int old_cols = cols;
+        double** old_data = data;
+        
+        // Создаем новую память
         rows = other.rows;
         cols = other.cols;
         data = new double *[rows];
@@ -46,26 +54,30 @@ private:
                 data[i][j] = other.data[i][j];
             }
         }
+        
+        // Теперь безопасно удаляем старые данные
+        if (old_data != nullptr)
+        {
+            for (int i = 0; i < old_rows; i++)
+            {
+                delete[] old_data[i];
+            }
+            delete[] old_data;
+        }
     }
 
 public:
     // Конструктор по умолчанию
-    Matrix()
+    Matrix() : rows(0), cols(0), data(nullptr)
     {
-        rows = 0;
-        cols = 0;
-        data = nullptr;
         cout << "Created empty matrix" << "\n";
     }
 
     // Параметрический конструктор
-    Matrix(int rowsCount, int colsCount)
+    Matrix(int rowsCount, int colsCount) : rows(0), cols(0), data(nullptr)
     {
         if (rowsCount <= 0 || colsCount <= 0)
         {
-            rows = 0;
-            cols = 0;
-            data = nullptr;
             cout << "Invalid input" << "\n";
             return;
         }
@@ -86,21 +98,23 @@ public:
     }
 
     // Конструктор копирования
-    Matrix(const Matrix& other)
+    Matrix(const Matrix& other) : rows(0), cols(0), data(nullptr)
     {
         deepCopy(other);
         cout << "Matrix copied " << rows << "x" << cols << "\n";
     }
 
-    // ОПЕРАТОР ПРИСВАИВАНИЯ КОПИРОВАНИЕМ (ДОБАВЛЕН)
+    // Оператор присваивания копированием (УЛУЧШЕННЫЙ)
     Matrix& operator=(const Matrix& other)
     {
-        if (this != &other) // Защита от самоприсваивания
+        if (this == &other) // Явная проверка самоприсваивания
         {
-            cleanup();      // Очищаем текущие данные
-            deepCopy(other); // Выполняем глубокое копирование
-            cout << "Matrix assigned (copy) " << rows << "x" << cols << "\n";
+            cout << "Self-assignment detected and handled safely" << "\n";
+            return *this;
         }
+        
+        deepCopy(other); // Безопасное копирование
+        cout << "Matrix assigned (copy) " << rows << "x" << cols << "\n";
         return *this;
     }
 
@@ -111,6 +125,7 @@ public:
         cout << "Memory cleaned up" << "\n";
     }
 
+    // Остальные методы остаются без изменений...
     void input()
     {
         if (data == nullptr)
@@ -175,48 +190,25 @@ public:
 
 int main()
 {
-    // Демонстрация работы конструктора копирования
-    Matrix aaa;
-    Matrix bbb(2, 3);
-    bbb.input();
-    bbb.print();
+    // Тестирование безопасного самоприсваивания
+    Matrix test(2, 2);
+    test.input();
     
-    // Использование конструктора копирования
-    Matrix ccc = bbb; // Вызывается конструктор копирования
-    cout << "Copy of matrix:" << endl;
-    ccc.print();
+    cout << "Before self-assignment:" << endl;
+    test.print();
     
-    // Изменяем оригинал - копия не должна измениться
-    bbb.multiplyByNumber(2);
-    cout << "Original matrix after multiplication:" << endl;
-    bbb.print();
-    cout << "Copy matrix (should be unchanged):" << endl;
-    ccc.print();
+    // Прямое самоприсваивание
+    test = test;
     
-    // Другой способ вызова конструктора копирования
-    Matrix ddd(bbb);
-    cout << "Another copy:" << endl;
-    ddd.print();
-    
-    // Копирование пустой матрицы
-    Matrix emptyCopy = aaa;
-    emptyCopy.print();
-
-    // Демонстрация оператора присваивания
-    cout << "\n=== Testing assignment operator ===\n";
-    Matrix eee(1, 1);
-    eee.input();
-    cout << "Before assignment:" << endl;
-    eee.print();
-    
-    eee = bbb; // Вызывается оператор присваивания
-    cout << "After assignment from bbb:" << endl;
-    eee.print();
-    
-    // Тест самоприсваивания
-    eee = eee; // Должно работать безопасно
     cout << "After self-assignment:" << endl;
-    eee.print();
+    test.print();
+    
+    // Непрямое самоприсваивание через ссылку
+    Matrix& ref = test;
+    test = ref;
+    
+    cout << "After self-assignment via reference:" << endl;
+    test.print();
 
     return 0;
 }
