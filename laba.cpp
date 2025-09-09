@@ -4,13 +4,12 @@ using namespace std;
 
 class Matrix
 {
-private:
+  private:
     int rows;
     int cols;
     double **data;
 
-    // Вспомогательная функция для очистки памяти
-    void cleanup()
+    void clear()
     {
         if (data != nullptr)
         {
@@ -25,27 +24,12 @@ private:
         cols = 0;
     }
 
-    // Вспомогательная функция для глубокого копирования (БЕЗОПАСНАЯ)
-    void deepCopy(const Matrix& other)
+    void copyFrom(const Matrix &other)
     {
-        if (other.data == nullptr)
-        {
-            rows = 0;
-            cols = 0;
-            data = nullptr;
-            return;
-        }
-
-        // Сначала сохраняем старые данные на случай самоприсваивания
-        int old_rows = rows;
-        int old_cols = cols;
-        double** old_data = data;
-        
-        // Создаем новую память
         rows = other.rows;
         cols = other.cols;
+
         data = new double *[rows];
-        
         for (int i = 0; i < rows; i++)
         {
             data[i] = new double[cols];
@@ -54,36 +38,22 @@ private:
                 data[i][j] = other.data[i][j];
             }
         }
-        
-        // Теперь безопасно удаляем старые данные
-        if (old_data != nullptr)
-        {
-            for (int i = 0; i < old_rows; i++)
-            {
-                delete[] old_data[i];
-            }
-            delete[] old_data;
-        }
     }
 
-public:
-    // Конструктор по умолчанию
-    Matrix() : rows(0), cols(0), data(nullptr)
-    {
-        cout << "Created empty matrix" << "\n";
-    }
+  public:
+    Matrix() : rows(0), cols(0), data(nullptr) {}
 
-    // Параметрический конструктор
-    Matrix(int rowsCount, int colsCount) : rows(0), cols(0), data(nullptr)
+    Matrix(int rowsCount, int colsCount) : rows(rowsCount), cols(colsCount)
     {
         if (rowsCount <= 0 || colsCount <= 0)
         {
+            rows = 0;
+            cols = 0;
+            data = nullptr;
             cout << "Invalid input" << "\n";
             return;
         }
 
-        rows = rowsCount;
-        cols = colsCount;
         data = new double *[rows];
 
         for (int i = 0; i < rows; i++)
@@ -97,35 +67,54 @@ public:
         cout << "Created matrix " << rows << "x" << cols << "\n";
     }
 
-    // Конструктор копирования
-    Matrix(const Matrix& other) : rows(0), cols(0), data(nullptr)
+    Matrix(const Matrix &other) : rows(other.rows), cols(other.cols)
     {
-        deepCopy(other);
+        if (other.data == nullptr)
+        {
+            rows = 0;
+            cols = 0;
+            data = nullptr;
+            cout << "Copied empty matrix" << "\n";
+            return;
+        }
+
+        data = new double *[rows];
+
+        for (int i = 0; i < rows; i++)
+        {
+            data[i] = new double[cols];
+            for (int j = 0; j < cols; j++)
+            {
+                data[i][j] = other.data[i][j];
+            }
+        }
         cout << "Matrix copied " << rows << "x" << cols << "\n";
     }
 
-    // Оператор присваивания копированием (УЛУЧШЕННЫЙ)
-    Matrix& operator=(const Matrix& other)
+    ~Matrix()
     {
-        if (this == &other) // Явная проверка самоприсваивания
+        if (data != nullptr)
         {
-            cout << "Self-assignment detected and handled safely" << "\n";
-            return *this;
+            for (int i = 0; i < rows; i++)
+            {
+                delete[] data[i];
+            }
+            delete[] data;
+            data = nullptr;
+            cout << "Memory cleaned up" << "\n";
         }
-        
-        deepCopy(other); // Безопасное копирование
-        cout << "Matrix assigned (copy) " << rows << "x" << cols << "\n";
+    }
+
+    Matrix &operator=(const Matrix &other)
+    {
+        if (this != &other)
+        {
+            clear();
+            copyFrom(other);
+        }
         return *this;
     }
 
-    // Деструктор
-    ~Matrix()
-    {
-        cleanup();
-        cout << "Memory cleaned up" << "\n";
-    }
-
-    // Остальные методы остаются без изменений...
     void input()
     {
         if (data == nullptr)
@@ -190,25 +179,27 @@ public:
 
 int main()
 {
-    // Тестирование безопасного самоприсваивания
-    Matrix test(2, 2);
-    test.input();
-    
-    cout << "Before self-assignment:" << endl;
-    test.print();
-    
-    // Прямое самоприсваивание
-    test = test;
-    
-    cout << "After self-assignment:" << endl;
-    test.print();
-    
-    // Непрямое самоприсваивание через ссылку
-    Matrix& ref = test;
-    test = ref;
-    
-    cout << "After self-assignment via reference:" << endl;
-    test.print();
+    Matrix aaa;
+    Matrix bbb(2, 3);
+    bbb.input();
+    bbb.print();
+
+    Matrix ccc = bbb;
+    cout << "Copy of matrix:" << "\n";
+    ccc.print();
+
+    bbb.multiplyByNumber(2);
+    cout << "Original matrix after multiplication:" << "\n";
+    bbb.print();
+    cout << "Copy matrix (should be unchanged):" << "\n";
+    ccc.print();
+
+    Matrix ddd(bbb);
+    cout << "Another copy:" << "\n";
+    ddd.print();
+
+    Matrix emptyCopy = aaa;
+    emptyCopy.print();
 
     return 0;
 }
