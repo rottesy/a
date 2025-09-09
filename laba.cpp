@@ -4,28 +4,37 @@ using namespace std;
 
 class Matrix
 {
-  private:
+private:
     int rows;
     int cols;
     double **data;
 
-  public:
-    // Конструктор по умолчанию - ИСПРАВЛЕНО: список инициализации
-    Matrix() : rows(0), cols(0), data(nullptr) {
+public:
+    // Конструктор по умолчанию
+    Matrix()
+    {
+        rows = 0;
+        cols = 0;
+        data = nullptr;
         cout << "Created empty matrix" << "\n";
     }
 
-    // Параметризированный конструктор - ИСПРАВЛЕНО: список инициализации
-    Matrix(int rowsCount, int colsCount) : rows(rowsCount), cols(colsCount), data(nullptr) {
+    // Параметрический конструктор
+    Matrix(int rowsCount, int colsCount)
+    {
         if (rowsCount <= 0 || colsCount <= 0)
         {
             rows = 0;
             cols = 0;
+            data = nullptr;
             cout << "Invalid input" << "\n";
             return;
         }
 
+        rows = rowsCount;
+        cols = colsCount;
         data = new double *[rows];
+
         for (int i = 0; i < rows; i++)
         {
             data[i] = new double[cols];
@@ -37,30 +46,19 @@ class Matrix
         cout << "Created matrix " << rows << "x" << cols << "\n";
     }
 
-    // ДЕСТРУКТОР - уже был реализован правильно
-    ~Matrix()
+    // КОНСТРУКТОР КОПИРОВАНИЯ (добавлен)
+    Matrix(const Matrix& other)
     {
-        if (data != nullptr)
+        if (other.data == nullptr)
         {
-            for (int i = 0; i < rows; i++)
-            {
-                delete[] data[i];
-            }
-            delete[] data;
+            // Если исходная матрица пустая
+            rows = 0;
+            cols = 0;
             data = nullptr;
-            cout << "Memory cleaned up" << "\n";
-        }
-    }
-
-    // КОНСТРУКТОР КОПИРОВАНИЯ - ДОБАВЛЕНО (Правило трех)
-    Matrix(const Matrix& other) : rows(0), cols(0), data(nullptr) {
-        cout << "Copy constructor called for matrix " << other.rows << "x" << other.cols << "\n";
-        
-        // Если исходная матрица пустая, просто выходим
-        if (other.data == nullptr) {
+            cout << "Copied empty matrix" << "\n";
             return;
         }
-        
+
         // Копируем размеры
         rows = other.rows;
         cols = other.cols;
@@ -74,21 +72,15 @@ class Matrix
             data[i] = new double[cols];
             for (int j = 0; j < cols; j++)
             {
-                data[i][j] = other.data[i][j]; // Глубокое копирование значений
+                data[i][j] = other.data[i][j]; // Глубокое копирование
             }
         }
+        cout << "Matrix copied " << rows << "x" << cols << "\n";
     }
 
-    // ОПЕРАТОР ПРИСВАИВАНИЯ КОПИРОВАНИЕМ - ДОБАВЛЕНО (Правило трех)
-    Matrix& operator=(const Matrix& other) {
-        cout << "Copy assignment operator called for matrix " << other.rows << "x" << other.cols << "\n";
-        
-        // Проверка на самоприсваивание: if (this == &other) return *this;
-        if (this == &other) {
-            return *this;
-        }
-        
-        // 1. Очищаем текущие ресурсы
+    // Деструктор
+    ~Matrix()
+    {
         if (data != nullptr)
         {
             for (int i = 0; i < rows; i++)
@@ -97,33 +89,8 @@ class Matrix
             }
             delete[] data;
             data = nullptr;
+            cout << "Memory cleaned up" << "\n";
         }
-        
-        // 2. Сбрасываем размеры
-        rows = 0;
-        cols = 0;
-        
-        // 3. Если исходная матрица пустая, выходим
-        if (other.data == nullptr) {
-            return *this;
-        }
-        
-        // 4. Копируем размеры
-        rows = other.rows;
-        cols = other.cols;
-        
-        // 5. Выделяем новую память и копируем данные
-        data = new double *[rows];
-        for (int i = 0; i < rows; i++)
-        {
-            data[i] = new double[cols];
-            for (int j = 0; j < cols; j++)
-            {
-                data[i][j] = other.data[i][j]; // Глубокое копирование
-            }
-        }
-        
-        return *this;
     }
 
     void input()
@@ -150,7 +117,7 @@ class Matrix
         }
     }
 
-    void print() const
+    void print()
     {
         if (data == nullptr)
         {
@@ -190,26 +157,32 @@ class Matrix
 
 int main()
 {
-    // Демонстрация работы
+    // Демонстрация работы конструктора копирования
     Matrix aaa;
     Matrix bbb(2, 3);
     bbb.input();
     bbb.print();
     
-    // Тестируем конструктор копирования
-    Matrix ccc = bbb;
-    cout << "Copied matrix ccc:" << endl;
+    // Использование конструктора копирования
+    Matrix ccc = bbb; // Вызывается конструктор копирования
+    cout << "Copy of matrix:" << endl;
     ccc.print();
     
-    // Тестируем оператор присваивания
-    Matrix ddd(1, 1);
-    ddd = bbb;
-    cout << "Assigned matrix ddd:" << endl;
+    // Изменяем оригинал - копия не должна измениться
+    bbb.multiplyByNumber(2);
+    cout << "Original matrix after multiplication:" << endl;
+    bbb.print();
+    cout << "Copy matrix (should be unchanged):" << endl;
+    ccc.print();
+    
+    // Другой способ вызова конструктора копирования
+    Matrix ddd(bbb);
+    cout << "Another copy:" << endl;
     ddd.print();
     
-    bbb.multiplyByNumber(2);
-    cout << "Original bbb after multiplication:" << endl;
-    bbb.print();
-    cout << "Copy ccc (should be unchanged):" << endl;
-    ccc.print();
+    // Копирование пустой матрицы
+    Matrix emptyCopy = aaa;
+    emptyCopy.print();
+
+    return 0;
 }
