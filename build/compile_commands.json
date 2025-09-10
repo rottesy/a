@@ -1,0 +1,20 @@
+[
+{
+  "directory": "D:/TESTINGCMAKE/build",
+  "command": "D:\\msy2\\ucrt64\\bin\\c++.exe  @CMakeFiles/lol.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\lol.dir\\lol.cpp.obj -c D:\\TESTINGCMAKE\\lol.cpp",
+  "file": "D:/TESTINGCMAKE/lol.cpp",
+  "output": "CMakeFiles/lol.dir/lol.cpp.obj"
+},
+{
+  "directory": "D:/TESTINGCMAKE/build",
+  "command": "D:\\msy2\\ucrt64\\bin\\c++.exe  @CMakeFiles/lol.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\lol.dir\\Matrix.cpp.obj -c D:\\TESTINGCMAKE\\Matrix.cpp",
+  "file": "D:/TESTINGCMAKE/Matrix.cpp",
+  "output": "CMakeFiles/lol.dir/Matrix.cpp.obj"
+},
+{
+  "directory": "D:/TESTINGCMAKE/build",
+  "command": "D:\\msy2\\ucrt64\\bin\\c++.exe  @CMakeFiles/lol.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\lol.dir\\menu.cpp.obj -c D:\\TESTINGCMAKE\\menu.cpp",
+  "file": "D:/TESTINGCMAKE/menu.cpp",
+  "output": "CMakeFiles/lol.dir/menu.cpp.obj"
+}
+]

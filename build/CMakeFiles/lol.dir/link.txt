@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\lol.dir/objects.a
+D:\msy2\ucrt64\bin\ar.exe qc CMakeFiles\lol.dir/objects.a @CMakeFiles\lol.dir\objects1.rsp
+D:\msy2\ucrt64\bin\c++.exe -g -Wl,--whole-archive CMakeFiles\lol.dir/objects.a -Wl,--no-whole-archive -o lol.exe -Wl,--out-implib,liblol.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\lol.dir\linkLibs.rsp

@@ -1,0 +1,3 @@
+D:/TESTINGCMAKE/build/CMakeFiles/lol.dir
+D:/TESTINGCMAKE/build/CMakeFiles/edit_cache.dir
+D:/TESTINGCMAKE/build/CMakeFiles/rebuild_cache.dir
