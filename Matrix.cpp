@@ -34,9 +34,8 @@ void Matrix::copyFrom(const Matrix &other)
     }
 }
 
-Matrix::Matrix() : rows(1), cols(1), data(nullptr)
+Matrix::Matrix() : rows(1), cols(1), data(new int*[1])
 {
-    data = new int*[1];
     data[0] = new int[1];
     data[0][0] = 0;
     cout << "Created default 1x1 matrix with zero" << "\n";
